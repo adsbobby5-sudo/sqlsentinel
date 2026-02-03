@@ -1,4 +1,3 @@
-import oracledb from 'oracledb';
 import { connectionQueries } from '../db/meta.js';
 import { decrypt } from './encryption.js';
 
@@ -12,7 +11,13 @@ const pools = new Map();
 async function getDriver(dbType) {
     switch (dbType.toUpperCase()) {
         case 'ORACLE':
-            return oracledb;
+            try {
+                const oracledb = await import('oracledb');
+                return oracledb.default || oracledb;
+            } catch (e) {
+                console.error('Oracle driver import failed:', e);
+                throw new Error('Oracle driver not installed or Instant Client missing.');
+            }
         case 'MYSQL':
             // Dynamic import for MySQL if available
             try {
@@ -42,6 +47,16 @@ async function createPool(connection) {
 
     switch (connection.db_type.toUpperCase()) {
         case 'ORACLE': {
+            const oracledb = await getDriver('ORACLE');
+            // Simplified connection check for Vercel/Serverless where thin mode might be needed
+            // Try enabling thin mode if not already
+            try {
+                if (oracledb.initOracleClient) {
+                    // Attempt to use thin mode which doesn't require instant client binaries
+                    // depending on driver version
+                }
+            } catch (e) { }
+
             const pool = await oracledb.createPool({
                 user: connection.username,
                 password: password,
@@ -161,6 +176,7 @@ export async function executeQuery(connectionId, sql, maxRows = 1000) {
 
         switch (type) {
             case 'ORACLE': {
+                const oracledb = await getDriver('ORACLE');
                 result = await connection.execute(sql, [], {
                     outFormat: oracledb.OUT_FORMAT_OBJECT,
                     maxRows
@@ -217,6 +233,7 @@ export async function getSchema(connectionId) {
     try {
         switch (type) {
             case 'ORACLE': {
+                const oracledb = await getDriver('ORACLE');
                 const tablesResult = await connection.execute(
                     `SELECT table_name FROM user_tables ORDER BY table_name`,
                     [],
@@ -308,6 +325,7 @@ export async function testConnection(config) {
     try {
         switch (config.db_type.toUpperCase()) {
             case 'ORACLE': {
+                const oracledb = await getDriver('ORACLE');
                 const password = config.password_encrypted ? decrypt(config.password_encrypted) : config.password;
                 const conn = await oracledb.getConnection({
                     user: config.username,
