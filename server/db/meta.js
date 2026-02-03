@@ -7,7 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Initialize SQLite database for metadata
-const dbPath = join(__dirname, 'sqlsentinel.db');
+// On Vercel, we must use /tmp as it's the only writable directory
+const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+const dbPath = isVercel ? '/tmp/sqlsentinel.db' : join(__dirname, 'sqlsentinel.db');
+
 const db = new Database(dbPath);
 
 // Enable foreign keys
