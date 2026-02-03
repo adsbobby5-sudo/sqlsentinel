@@ -24,6 +24,17 @@ const schemaPath = isVercel
 
 const schema = readFileSync(schemaPath, 'utf-8');
 db.exec(schema);
+
+// CRITICAL: Force update admin password hash on every server start
+// This ensures login works even if old database persists in Vercel's /tmp
+const ADMIN_PASSWORD_HASH = '$2b$12$/lmQ5g91UrRmhWJVpGv0KO/KdAxbAIKpQj76ORwp8WB6T7lytWbVu';
+try {
+  db.exec(`UPDATE users SET password_hash = '${ADMIN_PASSWORD_HASH}' WHERE email = 'admin@sqlsentinel.local'`);
+  console.log('✅ Admin password hash verified/updated');
+} catch (e) {
+  console.log('⚠️ Could not update admin password:', e.message);
+}
+
 console.log('✅ Meta database initialized');
 
 // User operations
