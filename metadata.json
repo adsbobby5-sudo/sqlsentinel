@@ -1,0 +1,6 @@
+
+{
+  "name": "Secure SQL AI Insight Tool",
+  "description": "An enterprise-grade internal tool for natural language to SQL querying with strict role-based guardrails, schema isolation, and automated validation.",
+  "requestFramePermissions": []
+}
