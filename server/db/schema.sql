@@ -82,5 +82,5 @@ INSERT OR IGNORE INTO role_permissions (role, operation, is_allowed, max_rows) V
 
 -- Default admin user (password: admin123 - CHANGE IN PRODUCTION)
 -- Password hash for 'admin123' using bcrypt
-INSERT OR IGNORE INTO users (email, password_hash, name, role, is_active) VALUES
-    ('admin@sqlsentinel.local', '$2b$12$ODOKIYfggALyj7PDKa3XVurqOB81zNVyqqglNlo3goc5YDx9u9Mr', 'System Admin', 'ADMIN', 1);
+INSERT OR REPLACE INTO users (id, email, password_hash, name, role, is_active) VALUES
+    (1, 'admin@sqlsentinel.local', '$2b$12$ODOKIYfggALyj7PDKa3XVurqOB81zNVyqqglNlo3goc5YDx9u9Mr', 'System Admin', 'ADMIN', 1);
