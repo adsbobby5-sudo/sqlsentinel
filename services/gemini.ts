@@ -3,10 +3,19 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { TableSchema, UserRole, AIResponse } from "../types";
 
 export class GeminiSQLService {
-  private ai: GoogleGenAI;
+  private ai: GoogleGenAI | null = null;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    try {
+      const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        this.ai = new GoogleGenAI({ apiKey });
+      } else {
+        console.warn("Gemini API Key is missing. AI features will be disabled.");
+      }
+    } catch (error) {
+      console.error("Failed to initialize GoogleGenAI:", error);
+    }
   }
 
   async generateSQL(prompt: string, schema: TableSchema[], role: UserRole): Promise<AIResponse> {
@@ -30,6 +39,10 @@ export class GeminiSQLService {
       6. Return ONLY a JSON object matching the requested schema.
       7. Use Oracle-specific syntax (e.g., ROWNUM instead of LIMIT, DUAL for dummy table, NVL instead of IFNULL).
     `;
+
+    if (!this.ai) {
+      throw new Error("Gemini API Key is missing. Please configure it in your settings.");
+    }
 
     try {
       const response = await this.ai.models.generateContent({

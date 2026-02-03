@@ -17,7 +17,11 @@ const db = new Database(dbPath);
 db.pragma('foreign_keys = ON');
 
 // Initialize schema first (before preparing statements)
-const schemaPath = join(__dirname, 'schema.sql');
+// Initialize schema first (before preparing statements)
+const schemaPath = isVercel
+  ? join(process.cwd(), 'server', 'db', 'schema.sql')
+  : join(__dirname, 'schema.sql');
+
 const schema = readFileSync(schemaPath, 'utf-8');
 db.exec(schema);
 console.log('✅ Meta database initialized');
