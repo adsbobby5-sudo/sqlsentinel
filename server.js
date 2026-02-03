@@ -143,27 +143,34 @@ process.on('SIGTERM', async () => {
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 SQL Sentinel Backend v2.0.0`);
-  console.log(`   Server running at http://localhost:${PORT}`);
-  console.log(`\n📡 API Endpoints:`);
-  console.log(`   Authentication:`);
-  console.log(`   - POST /api/auth/login`);
-  console.log(`   - GET  /api/auth/me`);
-  console.log(`   - POST /api/auth/logout`);
-  console.log(`\n   Admin (requires ADMIN role):`);
-  console.log(`   - GET/POST       /api/admin/users`);
-  console.log(`   - PUT/DELETE     /api/admin/users/:id`);
-  console.log(`   - GET/PUT        /api/admin/permissions`);
-  console.log(`   - GET            /api/admin/logs`);
-  console.log(`\n   Connections:`);
-  console.log(`   - GET/POST       /api/connections`);
-  console.log(`   - PUT/DELETE     /api/connections/:id`);
-  console.log(`   - POST           /api/connections/:id/test`);
-  console.log(`\n   Query Execution:`);
-  console.log(`   - POST           /api/query/execute`);
-  console.log(`   - GET            /api/query/schema/:connectionId`);
-  console.log(`   - GET            /api/query/databases`);
-  console.log(`\n🔐 Security: RBAC enabled with JWT authentication`);
-  console.log(`📊 Audit: All queries logged with user attribution\n`);
-});
+// Export app for Vercel
+export default app;
+
+// Only start the server if running directly (not imported as a module)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 SQL Sentinel Backend v2.0.0`);
+    console.log(`   Server running at http://localhost:${PORT}`);
+    console.log(`\n📡 API Endpoints:`);
+    console.log(`   Authentication:`);
+    console.log(`   - POST /api/auth/login`);
+    console.log(`   - GET  /api/auth/me`);
+    console.log(`   - POST /api/auth/logout`);
+    console.log(`\n   Admin (requires ADMIN role):`);
+    console.log(`   - GET/POST       /api/admin/users`);
+    console.log(`   - PUT/DELETE     /api/admin/users/:id`);
+    console.log(`   - GET/PUT        /api/admin/permissions`);
+    console.log(`   - GET            /api/admin/logs`);
+    console.log(`\n   Connections:`);
+    console.log(`   - GET/POST       /api/connections`);
+    console.log(`   - PUT/DELETE     /api/connections/:id`);
+    console.log(`   - POST           /api/connections/:id/test`);
+    console.log(`\n   Query Execution:`);
+    console.log(`   - POST           /api/query/execute`);
+    console.log(`   - GET            /api/query/schema/:connectionId`);
+    console.log(`   - GET            /api/query/databases`);
+    console.log(`\n🔐 Security: RBAC enabled with JWT authentication`);
+    console.log(`📊 Audit: All queries logged with user attribution\n`);
+  });
+}
+
