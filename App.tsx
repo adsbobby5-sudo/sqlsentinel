@@ -102,12 +102,7 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Show login if not authenticated
-  if (!isAuthenticated) {
-    return <Login />;
-  }
-
-  // Show admin view
+  // Demo mode: app should open directly without login for now.
   if (view === 'admin') {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
